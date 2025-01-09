@@ -1,7 +1,7 @@
 
 # Application Logs and Metrics Integration
 
-This guide provides instructions for integrating **Loki** for application logs and **Prometheus** for metrics scraping in your project.
+This guide provides instructions for integrating **Loki** for application logs in your project.
 
 ---
 
@@ -23,7 +23,7 @@ In your `docker-compose.yml` file, add the following logging configuration to ea
 logging:
   driver: loki
   options:
-    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-url: "http://loki:3100/loki/api/v1/push"
 ```
 
 ---

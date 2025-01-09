@@ -1,5 +1,24 @@
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: automation-monitoring
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+    networks:
+      - monitoring
+    depends_on:
+      - loki
+      - grafana
+    volumes:
+      - ./src:/app/src 
+    ports:
+      - "4000:4000" 
+
   loki:
     image: grafana/loki:latest
     container_name: loki
@@ -15,7 +34,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3003:3000"
+      - "3000:3000"
     env_file:
       - .env
     environment:
@@ -28,7 +47,7 @@ services:
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-url: "http://loki:3100/loki/api/v1/push"
     networks:
       - monitoring
 
@@ -38,3 +57,4 @@ volumes:
 
 networks:
   monitoring:
+    driver: bridge

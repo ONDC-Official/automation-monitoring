@@ -1,0 +1,31 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://13.233.69.163:3100/loki/api/v1/push
+
+scrape_configs:
+  # Dynamic Docker container log collection
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+    relabel_configs:
+      # Extract container name
+      - source_labels: [__meta_docker_container_name]
+        target_label: container_name
+      # Extract container ID
+      - source_labels: [__meta_docker_container_id]
+        target_label: container_id
+      # Extract container labels
+      - source_labels: [__meta_docker_container_label_com_docker_swarm_service_name]
+        target_label: service
+      # Optional: Filter out specific containers (e.g., exclude promtail itself)
+      - source_labels: [__meta_docker_container_name]
+        regex: 'promtail'
+        action: drop
+    pipeline_stages:
+      - docker: {}  # Automatically parse Docker log format

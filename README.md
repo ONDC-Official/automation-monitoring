@@ -31,3 +31,4 @@ logging:
 With these configurations, your application logs will be sent to Loki, which can be then visualised in Grafana.
 
 
+

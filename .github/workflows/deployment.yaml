@@ -1,8 +1,9 @@
 name: ONDC Automation Monitoring Service Deployment
 
 on:
+
   push:
-    branches: ["main"]
+    branches: ["release-staging"]
   workflow_dispatch:
 
 jobs:

@@ -6,9 +6,9 @@ services:
       - "3101:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
-      - loki-data-staging:/loki
+      - loki-staging-data:/loki
     networks:
-      - monitoring
+      - monitoring-staging
 
   grafana:
     image: grafana/grafana:latest
@@ -21,29 +21,29 @@ services:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     volumes:
-      - grafana-data-staging:/var/lib/grafana
+      - grafana-staging-data:/var/lib/grafana
       - ./grafana.ini:/etc/grafana/grafana.ini
     depends_on:
       - loki
     networks:
-      - monitoring
+      - monitoring-staging
 
   promtail:
     image: grafana/promtail:2.7.1
     container_name: promtail-staging
     volumes:
       - ./promtail-config.yaml:/etc/promtail/config.yml
-      - /var/log-staging:/var/log
-      - /var/lib/docker/containers-staging:/var/lib/docker/containers  # Mount the Docker logs
-      - /var/run/docker-staging.sock:/var/run/docker.sock
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers  # Mount the Docker logs
+      - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - monitoring
+      - monitoring-staging
 
 volumes:
-  grafana-data:
-  loki-data:
+  grafana-staging-data:
+  loki-staging-data:
 
 networks:
-  monitoring:
+  monitoring-staging:
     driver: bridge

@@ -25,7 +25,7 @@ jobs:
           REPO_DIR=~/ONDC-automation-framework-staging/automation-monitoring
           echo "Removing existing repository directory if exists"
           sudo docker-compose -f $REPO_DIR/docker-compose.yml down || true
-          rm -rf \$REPO_DIR || true
+          sudo rm -rf \$REPO_DIR || true
           echo "Cloning repository from main branch"
           git clone --single-branch --branch release-staging https://github.com/ONDC-Official/automation-monitoring.git \$REPO_DIR
           EOF

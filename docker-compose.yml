@@ -22,6 +22,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini
     depends_on:
       - loki
     networks:

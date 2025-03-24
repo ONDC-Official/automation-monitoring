@@ -1,16 +1,16 @@
 server:
-  http_listen_port: 9081
+  http_listen_port: 9081  # Updated port to avoid conflict
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /tmp/positions-staging.yaml
 
 clients:
-  - url: http://13.233.69.163:3101/loki/api/v1/push
+  - url: http://13.233.69.163:3200/loki/api/v1/push  # Updated port to match staging Loki
 
 scrape_configs:
   # Dynamic Docker container log collection
-  - job_name: docker
+  - job_name: docker-staging
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
     relabel_configs:
@@ -25,7 +25,7 @@ scrape_configs:
         target_label: service
       # Optional: Filter out specific containers (e.g., exclude promtail itself)
       - source_labels: [__meta_docker_container_name]
-        regex: 'promtail'
+        regex: 'promtail-staging'
         action: drop
     pipeline_stages:
       - docker: {}  # Automatically parse Docker log format

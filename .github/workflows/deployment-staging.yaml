@@ -1,0 +1,62 @@
+name: ONDC Automation Monitoring Service Staging Deployment
+
+on:
+  push:
+    branches: ["staging"]
+  workflow_dispatch:
+
+jobs:
+  ssh-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SSH Setup and Cloning Repository
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./key.pem
+          chmod 600 ./key.pem
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+          ssh -i ./key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -T <<EOF
+          REPO_DIR=~/ONDC-automation-framework/automation-monitoring-staging
+          echo "Removing existing repository directory if exists"
+          rm -rf \$REPO_DIR
+          echo "Cloning repository from staging branch"
+          git clone --single-branch --branch staging https://github.com/ONDC-Official/automation-monitoring.git \$REPO_DIR
+          EOF
+
+      - name: Write secrets to .env.staging on EC2
+        run: |
+          echo "Writing secrets to .env.staging file"
+          ssh -i ./key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} <<EOF
+          REPO_DIR=~/ONDC-automation-framework/automation-monitoring-staging
+          echo "Writing environment variables to .env.staging file"
+          echo "GRAFANA_USER=${{ secrets.GRAFANA_USER_STAGING }}" >> \$REPO_DIR/.env.staging
+          echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD_STAGING }}" >> \$REPO_DIR/.env.staging
+          EOF
+
+      - name: Automation Monitoring Service Staging Deployment
+        run: |
+          echo "Deploying with Docker Compose"
+          ssh -i ./key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} <<EOF
+          REPO_DIR=~/ONDC-automation-framework/automation-monitoring-staging
+          cd \$REPO_DIR
+
+          # Ensure the .env.staging and docker-compose-staging.yml files exist
+          if [ ! -f .env.staging ]; then
+            echo ".env.staging file not found!"
+            exit 1
+          fi
+
+          if [ ! -f docker-compose-staging.yml ]; then
+            echo "docker-compose-staging.yml file not found!"
+            exit 1
+          fi
+
+          # Start the containers using Docker Compose
+          echo "Running docker-compose -f docker-compose-staging.yml up -d --build"
+          sudo docker compose -f docker-compose-staging.yml up -d --build
+          EOF

@@ -24,7 +24,7 @@ jobs:
           ssh -i ./key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -T <<EOF
           REPO_DIR=~/ONDC-automation-framework-staging/automation-monitoring
           echo "Removing existing repository directory if exists"
-          sudo docker-compose -f $REPO_DIR/docker-compose.yml down || true
+          sudo docker-compose -f $REPO_DIR/docker-compose-staging.yml down || true
           sudo rm -rf \$REPO_DIR || true
           echo "Cloning repository from main branch"
           git clone --single-branch --branch release-staging https://github.com/ONDC-Official/automation-monitoring.git \$REPO_DIR
@@ -44,30 +44,30 @@ jobs:
           fi
           EOF
 
-      - name: Write secrets to .env on EC2
+      - name: Write secrets to .env.staging on EC2
         run: |
-          echo "Writing secrets to .env file"
+          echo "Writing secrets to .env.staging file"
           ssh -i ./key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} <<EOF
           REPO_DIR=~/ONDC-automation-framework-staging/automation-monitoring
-          echo "Writing environment variables to .env file"
-          echo "GRAFANA_USER=${{ secrets.GRAFANA_USER }}" >> \$REPO_DIR/.env
-          echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> \$REPO_DIR/.env
+          echo "Writing environment variables to .env.staging file"
+          echo "GRAFANA_USER=${{ secrets.GRAFANA_USER }}" >> \$REPO_DIR/.env.staging
+          echo "GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}" >> \$REPO_DIR/.env.staging
           EOF
 
-      - name: Verify .env and docker-compose.yml files
+      - name: Verify .env.staging and docker-compose-staging.yml files
         run: |
           ssh -i ./key.pem ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} <<EOF
           REPO_DIR=~/ONDC-automation-framework-staging/automation-monitoring
-          # Check if .env and docker-compose.yml files exist
-          if [ ! -f \$REPO_DIR/.env ]; then
-            echo ".env file not found in \$REPO_DIR!"
+          # Check if .env.staging and docker-compose-staging.yml files exist
+          if [ ! -f \$REPO_DIR/.env.staging ]; then
+            echo ".env.staging file not found in \$REPO_DIR!"
             exit 1
           fi
-          if [ ! -f \$REPO_DIR/docker-compose.yml ]; then
-            echo "docker-compose.yml file not found in \$REPO_DIR!"
+          if [ ! -f \$REPO_DIR/docker-compose-staging.yml ]; then
+            echo "docker-compose-staging.yml file not found in \$REPO_DIR!"
             exit 1
           fi
-          echo ".env and docker-compose.yml files found."
+          echo ".env.staging and docker-compose-staging.yml files found."
           EOF
 
       - name: Automation Monitoring Service Deployment
@@ -77,14 +77,14 @@ jobs:
           REPO_DIR=~/ONDC-automation-framework-staging/automation-monitoring
           cd \$REPO_DIR
 
-          # Ensure the .env and docker-compose.yml files exist
+          # Ensure the .env.staging and docker-compose-staging.yml files exist
           if [ ! -f .env.staging ]; then
-            echo ".env file not found!"
+            echo ".env.staging file not found!"
             exit 1
           fi
 
           if [ ! -f docker-compose-staging.yml ]; then
-            echo "docker-compose.yml file not found!"
+            echo "docker-compose-staging.yml file not found!"
             exit 1
           fi
 

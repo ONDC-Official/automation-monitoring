@@ -78,12 +78,12 @@ jobs:
           cd \$REPO_DIR
 
           # Ensure the .env and docker-compose.yml files exist
-          if [ ! -f .env ]; then
+          if [ ! -f .env.staging ]; then
             echo ".env file not found!"
             exit 1
           fi
 
-          if [ ! -f docker-compose.yml ]; then
+          if [ ! -f docker-compose-staging.yml ]; then
             echo "docker-compose.yml file not found!"
             exit 1
           fi

@@ -14,7 +14,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana-staging
     ports:
-      - "3101:3000"  # Updated port to avoid conflict
+      - "3101:3101"  # Updated port to avoid conflict
     env_file:
       - .env.staging
     environment:

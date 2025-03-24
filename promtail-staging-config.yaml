@@ -6,7 +6,7 @@ positions:
   filename: /tmp/positions-staging.yaml
 
 clients:
-  - url: http://13.233.69.163:3200/loki/api/v1/push  # Updated port to match staging Loki
+  - url: http://13.233.69.163:3300/loki/api/v1/push  # Updated port to match staging Loki
 
 scrape_configs:
   # Dynamic Docker container log collection

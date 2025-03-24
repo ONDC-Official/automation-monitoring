@@ -3,7 +3,7 @@ services:
     image: grafana/loki:latest
     container_name: loki-staging
     ports:
-      - "3200:3100"  # Updated port to avoid conflict
+      - "3300:3100"  # Updated port to avoid conflict
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - loki-staging-data:/loki

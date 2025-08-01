@@ -1,0 +1,22 @@
+global:
+  resolve_timeout: 5m
+route:
+  group_by: ['alertname']
+  receiver: 'alerts'
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+
+  routes:
+    - match:
+        team: devops
+      receiver: 'alerts'
+receivers:
+    - name: 'alerts'
+      email_configs:
+        - to: 'shikha.rana@thewitslab.com'
+          from: 'devops@thewitslab.com'
+          smarthost: 'smtp.gmail.com:587'
+          auth_username: 'devops@thewitslab.com'
+          auth_password: 'kmgbujarincujepw'
+          send_resolved: true

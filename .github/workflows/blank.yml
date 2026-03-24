@@ -5,7 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on: [self-hosted, gcr-runner]
+    runs-on: [self-hosted]
 
     steps:
       - name: Check runner
